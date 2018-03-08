@@ -1,7 +1,8 @@
 {
-  "name": "edition-node-webpack",
-  "description": "A pure wrapper around patternlab-node core, the default pattern engine, and supporting frontend assets.",
-  "version": "1.0.5",
+  "name": "nothing-pattern-library-boilerplate",
+  "description": "A boilerplate for building pattern libraries on top of Patternlab",
+  "private": true,
+  "version": "0.1.0",
   "dependencies": {
     "babel-core": "^6.26.0",
     "babel-loader": "^7.1.2",
@@ -16,13 +17,8 @@
     "webpack-config-utils": "^2.3.0",
     "webpack-merge": "^4.1.0"
   },
-  "repository": "git@github.com:Comcast/patternlab-edition-node-webpack.git",
-  "bugs": "https://github.com/Comcast/patternlab-edition-node-webpack/issues",
-  "author": "Matt Bulfair <Matt_Bulfair@comcast.com>",
-  "contributors": [
-    "Rodrigo Gualberto <itzdrigz@gmail.com>",
-    "Paul Wright <paul@paintedbicycle.com>" 
-  ],
+  "repository": "git@github.com:NothingInteractive/pattern-library-boilerplate.git",
+  "author": "René Stalder <rey@nothing.ch>",
   "scripts": {
     "start": "yarn patternlab:serve",
     "webpack:version": "webpack --v",
@@ -34,13 +30,21 @@
     "patternlab:liststarterkits": "node patternlab.js liststarterkits",
     "patternlab:loadstarterkit": "node patternlab.js loadstarterkit",
     "patternlab:installplugin": "node patternlab.js installplugin",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js",
+    "precommit": "lint-staged"
   },
   "license": "Apache-2.0",
   "engines": {
     "node": ">=5.0"
   },
   "devDependencies": {
+    "codelyzer": "^4.2.1",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.0",
+    "prettier": "^1.11.1",
     "webpack-dev-server": "^2.9.5"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,css,md}": ["prettier --write", "git add"]
   }
 }
