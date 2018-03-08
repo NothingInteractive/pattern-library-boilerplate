@@ -1,0 +1,12 @@
+{
+  "extends": "stylelint-config-standard",
+  "rules": {
+    "declaration-colon-space-after": "always",
+    "declaration-block-semicolon-newline-after": "always",
+    "rule-empty-line-before": "always",
+    "selector-list-comma-space-after": "always",
+    "value-keyword-case": "lower",
+    "declaration-colon-newline-after": null,
+    "value-list-comma-newline-after": null
+  }
+}
