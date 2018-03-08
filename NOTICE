@@ -1,7 +1,11 @@
 Pattern Lab Node -  Webpack Edition
 
 Copyright 2017 Comcast Cable Communications Management, LLC
-Inspired By: https://github.com/pattern-lab/edition-node-gulp 
+Inspired By: https://github.com/pattern-lab/edition-node-gulp
+
+Pattern Library Boilerplate
+Copyright 2018 Nothing AG
+Extends Pattern Lab Node -  Webpack Edition for internal use.
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
