@@ -1,30 +1,17 @@
 {
-  "name": "edition-node-webpack",
-  "description": "A pure wrapper around patternlab-node core, the default pattern engine, and supporting frontend assets.",
-  "version": "1.0.5",
-  "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-es2015": "^6.24.1",
-    "copy-webpack-plugin": "^4.2.3",
-    "event-hooks-webpack-plugin": "^1.0.0",
-    "globby": "^6.1.0",
-    "patternlab-node": "^2.11.0",
-    "styleguidekit-assets-default": "^3.5.0",
-    "styleguidekit-mustache-default": "^3.0.0",
-    "webpack": "^3.10.0",
-    "webpack-config-utils": "^2.3.0",
-    "webpack-merge": "^4.1.0"
-  },
-  "repository": "git@github.com:Comcast/patternlab-edition-node-webpack.git",
-  "bugs": "https://github.com/Comcast/patternlab-edition-node-webpack/issues",
-  "author": "Matt Bulfair <Matt_Bulfair@comcast.com>",
-  "contributors": [
-    "Rodrigo Gualberto <itzdrigz@gmail.com>",
-    "Paul Wright <paul@paintedbicycle.com>" 
-  ],
+  "name": "nothing-pattern-library-boilerplate",
+  "description": "A boilerplate for building pattern libraries on top of Patternlab",
+  "private": true,
+  "version": "0.1.0",
+  "repository": "git@github.com:NothingInteractive/pattern-library-boilerplate.git",
+  "author": "René Stalder <rey@nothing.ch>",
   "scripts": {
-    "start": "yarn patternlab:serve",
+    "serve": "npm run start",
+    "build": "npm run patternlab:build",
+    "package": "webpack --env.prod --env.package -p",
+    "test": "npm run test:stylelint",
+    "test:stylelint": "stylelint source/**/*.css",
+    "start": "npm run patternlab:serve",
     "webpack:version": "webpack --v",
     "patternlab:build": "webpack --env.prod -p",
     "patternlab:serve": "webpack-dev-server --env.dev --hot --progress --colors",
@@ -34,13 +21,46 @@
     "patternlab:liststarterkits": "node patternlab.js liststarterkits",
     "patternlab:loadstarterkit": "node patternlab.js loadstarterkit",
     "patternlab:installplugin": "node patternlab.js installplugin",
-    "postinstall": "node scripts/postinstall.js"
+    "postinstall": "node scripts/postinstall.js",
+    "precommit": "lint-staged"
   },
   "license": "Apache-2.0",
   "engines": {
     "node": ">=5.0"
   },
   "devDependencies": {
-    "webpack-dev-server": "^2.9.5"
+    "babel-core": "^6.26.0",
+    "babel-loader": "^7.1.2",
+    "babel-preset-es2015": "^6.24.1",
+    "codelyzer": "^4.2.1",
+    "copy-webpack-plugin": "^4.2.3",
+    "css-loader": "^0.28.10",
+    "event-hooks-webpack-plugin": "^1.0.0",
+    "extract-text-webpack-plugin": "^3.0.2",
+    "globby": "^6.1.0",
+    "husky": "^0.14.3",
+    "lint-staged": "^7.0.0",
+    "patternlab-node": "^2.11.0",
+    "postcss-cssnext": "^3.1.0",
+    "postcss-import": "^11.1.0",
+    "postcss-loader": "^2.1.1",
+    "postcss-url": "^7.3.1",
+    "prettier": "^1.11.1",
+    "style-loader": "^0.20.3",
+    "styleguidekit-assets-default": "^3.5.0",
+    "styleguidekit-mustache-default": "^3.0.0",
+    "stylelint": "^9.1.1",
+    "stylelint-config-standard": "^18.2.0",
+    "ts-loader": "^3.5.0",
+    "tslint": "^5.9.1",
+    "typescript": "^2.7.2",
+    "url-loader": "^1.0.1",
+    "webpack": "^3.10.0",
+    "webpack-config-utils": "^2.3.0",
+    "webpack-dev-server": "^2.9.5",
+    "webpack-merge": "^4.1.0"
+  },
+  "lint-staged": {
+    "*.{ts,js,json,css,md}": ["prettier --write", "git add"]
   }
 }
