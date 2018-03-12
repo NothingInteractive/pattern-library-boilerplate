@@ -24,6 +24,13 @@
       "images": "./public/images/",
       "fonts": "./public/fonts/",
       "css": "./public/css/"
+    },
+    "package": {
+      "root": "./dist",
+      "js": "./dist/js/",
+      "images": "./dist/images/",
+      "fonts": "./dist/fonts/",
+      "css": "./dist/css/"
     }
   },
   "server": {
@@ -31,16 +38,15 @@
     "port": 3000
   },
   "webpackMerge": {
-    "entry":"replace"
+    "entry": "replace"
   },
-  "styleGuideExcludes": [
-  ],
+  "styleGuideExcludes": [],
   "defaultPattern": "all",
   "defaultShowPatternInfo": false,
-  "cleanPublic" : true,
+  "cleanPublic": true,
   "patternExtension": "mustache",
-  "ignored-extensions" : ["scss", "DS_Store", "less"],
-  "ignored-directories" : ["scss"],
+  "ignored-extensions": ["scss", "DS_Store", "less"],
+  "ignored-directories": ["scss"],
   "debug": false,
   "ishControlsHide": {
     "s": false,
@@ -65,8 +71,7 @@
     "l": [800, 2600]
   },
   "patternStateCascade": ["inprogress", "inreview", "complete"],
-  "patternStates": {
-  },
+  "patternStates": {},
   "patternExportPatternPartials": [],
   "patternExportDirectory": "./pattern_exports/",
   "cacheBust": true,
