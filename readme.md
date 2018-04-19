@@ -95,7 +95,7 @@ Defaults:
 
 * [babel-core](https://github.com/babel/babel/blob/master/LICENSE) - MIT
 * [babel-loader](https://github.com/babel/babel-loader/blob/master/LICENSE) -MIT,
-* [babel-preset-es2015](https://github.com/babel/babel/blob/master/LICENSE) - MIT
+* [babel-preset-env](https://github.com/babel/babel/blob/master/LICENSE) - MIT
 * [copy-webpack-plugin](https://github.com/webpack-contrib/copy-webpack-plugin/blob/master/LICENSE) - MIT
 * [event-hooks-webpack-plugin](https://github.com/cascornelissen/event-hooks-webpack-plugin/blob/master/LICENSE.md) - MIT
 * [globby](https://github.com/sindresorhus/globby/blob/master/license) - MIT
