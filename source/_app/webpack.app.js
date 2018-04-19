@@ -118,7 +118,8 @@ module.exports = env => {
  * @param {string} dest Output path
  */
 function toWebpackEntry(src, files, dest = '') {
-  return globby.sync([resolve(`${src}/${files}`)]).map(function(filePath) {
+  const entries = {};
+  const resultSet = globby.sync([resolve(`${src}/${files}`)]).forEach(function(filePath) {
     let filename = path.basename(filePath);
     const extName = path.extname(filePath);
 
@@ -127,9 +128,8 @@ function toWebpackEntry(src, files, dest = '') {
     }
 
     const outputPath = `${dest}/${filename}`;
+    entries[`${dest}/${filename}`] = filePath;
+  });
 
-    const entry = {};
-    entry[`${dest}/${filename}`] = filePath;
-    return entry;
-  })[0];
+  return entries;
 }
