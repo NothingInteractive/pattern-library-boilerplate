@@ -1,8 +1,31 @@
 {
+  "app": {
+    "webpackDevServer": {
+      "url": "http://localhost",
+      "port": 3000,
+      "watchContentBase": true,
+      "watchOptions": {
+        "aggregateTimeout": 500,
+        "ignored": [],
+        "info-verbosity": "verbose"
+      }
+    },
+    "webpackMerge": {
+      "entry": "replace"
+    },
+    "uglify": {
+      "sourceMap": false,
+      "parallel": true,
+      "uglifyOptions": {
+        "mangle": false
+      }
+    },
+    "namespace": ""
+  },
   "paths": {
     "source": {
       "root": "./source/",
-      "app": "./source/_app",
+      "app": "./source/_app/",
       "patterns": "./source/_patterns/",
       "data": "./source/_data/",
       "meta": "./source/_meta/",
@@ -33,20 +56,11 @@
       "css": "./dist/css/"
     }
   },
-  "server": {
-    "url": "http://localhost",
-    "port": 3000
-  },
-  "webpackMerge": {
-    "entry": "replace"
-  },
   "styleGuideExcludes": [],
   "defaultPattern": "all",
   "defaultShowPatternInfo": false,
   "cleanPublic": true,
   "patternExtension": "mustache",
-  "ignored-extensions": ["scss", "DS_Store", "less"],
-  "ignored-directories": ["scss"],
   "debug": false,
   "ishControlsHide": {
     "s": false,
