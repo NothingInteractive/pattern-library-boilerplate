@@ -12,7 +12,14 @@ const {resolve} = require('path');
 
 module.exports = env => {
   // Extend the default with the "build" value to be able making conditions for the path resolving in the wagtail static folder
-  const {ifProd, ifDev, ifPackage} = getIfUtils(env, ['production', 'prod', 'test', 'development', 'dev', 'package']);
+  const {ifProduction, ifDevelopment, ifPackage} = getIfUtils(env, [
+    'production',
+    'prod',
+    'test',
+    'development',
+    'dev',
+    'package'
+  ]);
 
   // Configure assets bundles
   const entries = () => {

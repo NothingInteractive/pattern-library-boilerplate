@@ -1,4 +1,6 @@
 // webpack.config.js
+// NO PROJECT SPECIFIC EDITS IN HERE:
+// Any configuration to be merged with 'webpack.config.babel.js' SHOULD BE ADDED TO '/source/_app/webpack.app.js'.
 const webpack = require('webpack');
 const {resolve} = require('path');
 const globby = require('globby');
