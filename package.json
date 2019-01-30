@@ -3,50 +3,60 @@
   "description": "A boilerplate for building pattern libraries on top of Patternlab",
   "private": true,
   "version": "0.1.0",
-  "repository": "git@github.com:NothingInteractive/pattern-library-boilerplate.git",
-  "author": "René Stalder <rey@nothing.ch>",
+  "repository": "git@github.com:NothingAG/pattern-library-boilerplate.git",
   "dependencies": {
-    "babel-core": "^6.26.0",
-    "babel-loader": "^7.1.2",
-    "babel-preset-env": "^1.6.1",
-    "codelyzer": "^4.2.1",
-    "copy-webpack-plugin": "^4.2.3",
-    "css-loader": "^0.28.10",
-    "event-hooks-webpack-plugin": "^1.0.0",
-    "extract-text-webpack-plugin": "^3.0.2",
-    "globby": "^6.1.0",
+    "@babel/cli": "^7.2.3",
+    "@babel/core": "^7.2.2",
+    "@babel/plugin-proposal-class-properties": "^7.2.3",
+    "@babel/polyfill": "^7.2.5",
+    "@babel/preset-env": "^7.2.3",
+    "@babel/register": "^7.0.0",
+    "babel-core": "^7.0.0-bridge.0",
+    "babel-loader": "^8.0.5",
+    "copy-webpack-plugin": "^4.6.0",
+    "css-loader": "^2.0.0",
+    "event-hooks-webpack-plugin": "^2.1.1",
+    "extract-text-webpack-plugin": "^4.0.0-beta.0",
+    "file-loader": "^2.0.0",
+    "globby": "^8.0.2",
     "husky": "^0.14.3",
     "lint-staged": "^7.0.0",
-    "patternlab-node": "^2.11.0",
+    "patternlab-node": "^2.12.0",
+    "postcss-import": "^12.0.1",
+    "postcss-loader": "^3.0.0",
+    "postcss-url": "^8.0.0",
     "postcss-cssnext": "^3.1.0",
-    "postcss-import": "^11.1.0",
-    "postcss-loader": "^2.1.1",
-    "postcss-url": "^7.3.1",
     "prettier": "^1.11.1",
-    "style-loader": "^0.20.3",
-    "styleguidekit-assets-default": "^3.5.0",
-    "styleguidekit-mustache-default": "^3.0.0",
+    "style-loader": "^0.23.1",
+    "styleguidekit-assets-default": "^3.5.2",
+    "styleguidekit-mustache-default": "^3.1.0",
     "stylelint": "^9.1.1",
     "stylelint-config-standard": "^18.2.0",
     "ts-loader": "^3.5.0",
     "tslint": "^5.9.1",
     "typescript": "^2.7.2",
-    "url-loader": "^1.0.1",
-    "webpack-config-utils": "^2.3.0",
-    "webpack": "^3.10.0",
-    "webpack-merge": "^4.1.0",
-    "webpack-dev-server": "^2.9.5"
+    "uglifyjs-webpack-plugin": "^2.1.1",
+    "url-loader": "^1.1.2",
+    "webpack": "^4.28.1",
+    "webpack-config-utils": "^2.3.1",
+    "webpack-merge": "^4.2.1"
   },
+  "author": "Matt Bulfair <Matt_Bulfair@comcast.com>",
+  "contributors": [
+    "Josh Schneider <josh68@gmail.com>",
+    "Paul Wright <paul@paintedbicycle.com>",
+    "René Stalder <rey@nothing.ch>"
+  ],
   "scripts": {
-    "serve": "npm run start",
+    "serve": "npm run patternlab:serve",
     "build": "npm run patternlab:build",
     "package": "webpack --env.prod --env.package -p",
     "test": "npm run test:stylelint",
     "test:stylelint": "stylelint source/**/*.css",
-    "start": "npm run patternlab:serve",
+    "start": "run-p patternlab:serve",
     "webpack:version": "webpack --v",
-    "patternlab:build": "webpack --env.prod -p",
-    "patternlab:serve": "webpack-dev-server --env.dev --hot --progress --colors",
+    "patternlab:build": "webpack --mode=production --env.production",
+    "patternlab:serve": "webpack-dev-server --mode=development --env.development",
     "patternlab:version": "node patternlab.js version",
     "patternlab:help": "node patternlab.js help",
     "patternlab:patternsonly": "node patternlab.js patternsonly",
@@ -54,6 +64,7 @@
     "patternlab:loadstarterkit": "node patternlab.js loadstarterkit",
     "patternlab:installplugin": "node patternlab.js installplugin",
     "postinstall": "node scripts/postinstall.js",
+    "diagnosis": "run-s patternlab:version webpack:version patternlab:build patternlab:serve",
     "precommit": "lint-staged"
   },
   "license": "Apache-2.0",
@@ -63,17 +74,25 @@
   "babel": {
     "presets": [
       [
-        "env",
+        "@babel/preset-env",
         {
-          "modules": "commonjs",
-          "targets": {
-            "node": "current"
-          }
+          "useBuiltIns": "usage"
         }
       ]
+    ],
+    "plugins": [
+      "@babel/plugin-proposal-class-properties"
     ]
   },
+  "devDependencies": {
+    "npm-run-all": "^4.1.5",
+    "webpack-cli": "^3.2.1",
+    "webpack-dev-server": "^3.1.14"
+  },
   "lint-staged": {
-    "*.{ts,js,json,css,md}": ["prettier --write", "git add"]
+    "*.{ts,js,json,css,md}": [
+      "prettier --write",
+      "git add"
+    ]
   }
 }

@@ -1,11 +1,24 @@
 language: node_js
 
 node_js:
-  - node
-  - 6
+  - lts/*
+
+cache:
+  directories:
+    - 'node_modules'
+
+env:
+  - TESTFOLDER=test-examples/sample-project-simple
+#  - TESTFOLDER=test-samples/sample-project-simple
+#  - TESTFOLDER=test-samples/sample-project-simple
+#  - TESTFOLDER=test-samples/sample-project-simple
+
+script:
+  - yarn webpack:version
+  - cp -a ./$TESTFOLDER/. ./source/
+  - npm run patternlab:build
 
 branches:
   only:
     - master
     - latest
-
