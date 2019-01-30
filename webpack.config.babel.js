@@ -12,6 +12,7 @@ const merge = require('webpack-merge');
 const customization = require(`${plConfig.paths.source.app}/webpack.app.js`);
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const postcssPresetEnv = require('postcss-preset-env');
 const atImport = require('postcss-import');
 const url = require('postcss-url');
 
@@ -177,7 +178,15 @@ module.exports = env => {
               publicPath: '../',
               use: [
                 {
-                  loader: 'css-loader'
+                  loader: 'css-loader',
+                  options: {importLoaders: 1}
+                },
+                {
+                  loader: 'postcss-loader',
+                  options: {
+                    ident: 'postcss',
+                    plugins: () => [postcssPresetEnv()]
+                  }
                 }
               ]
             })
