@@ -1,6 +1,6 @@
 // webpack.config.js
 const webpack = require('webpack');
-const {resolve} = require('path');
+const path = require('path');
 const globby = require('globby');
 const {getIfUtils, removeEmpty} = require('webpack-config-utils');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -10,150 +10,195 @@ const patternlab = require('patternlab-node')(plConfig);
 const patternEngines = require('patternlab-node/core/lib/pattern_engines');
 const merge = require('webpack-merge');
 const customization = require(`${plConfig.paths.source.app}/webpack.app.js`);
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
+const ExtractTextPlugin = require('extract-text-webpack-plugin');
+const atImport = require('postcss-import');
+const url = require('postcss-url');
 
 module.exports = env => {
-  const {ifProd, ifDev} = getIfUtils(env);
+  const {ifProduction, ifDevelopment} = getIfUtils(env);
 
-  const config = merge.smartStrategy(plConfig.webpackMerge)(
+  const entries = () => {
+    const dynamicJSEntries = toWebpackEntry({
+      from: plConfig.paths.source.js || plConfig.paths.source.root,
+      files: ['**/*.js', '!**/*.test.js', '!_app', '!styleguide'],
+      to: plConfig.paths.public.js || plConfig.paths.public.root
+    });
+
+    const dynamicCSSEntries = toWebpackEntry({
+      from: plConfig.paths.source.css || plConfig.paths.source.root,
+      files: ['**/*.css', '!_app', '!styleguide'],
+      to: plConfig.paths.public.css || plConfig.paths.public.root
+    });
+
+    const staticEntries = {};
+
+    const entries = Object.assign({}, dynamicCSSEntries, dynamicJSEntries, staticEntries);
+
+    return entries;
+  };
+
+  const config = merge.smartStrategy(plConfig.app.webpackMerge)(
     {
-      devtool: ifDev('source-map'),
-      context: resolve(__dirname, 'source'),
+      devtool: ifDevelopment('source-map'),
+      context: path.resolve(__dirname, plConfig.paths.source.root),
       node: {
         fs: 'empty'
       },
-      entry: {
-        // Gathers any Source JS files and creates a bundle
-        //NOTE: This name can be changed, if so, make sure to update _meta/01-foot.mustache
-        'js/pl-source': globby.sync([resolve(plConfig.paths.source.js + '**/*.js')]).map(function(filePath) {
-          return filePath;
-        })
-      },
+      entry: entries(),
       output: {
-        path: resolve(__dirname, 'public'),
-        filename: '[name].js'
+        path: path.resolve(__dirname, plConfig.paths.public.root),
+        filename: '[name]'
+      },
+      optimization: {
+        minimizer: [new UglifyJsPlugin(plConfig.app.uglify)],
+        splitChunks: {
+          cacheGroups: {
+            vendor: {
+              test: /node_modules/,
+              chunks: 'initial',
+              name: 'js/pl-source-vendor.js',
+              priority: 10,
+              enforce: true
+            }
+          }
+        }
       },
       plugins: removeEmpty([
-        ifDev(
-          // Live reloading in development only
-          new webpack.HotModuleReplacementPlugin()
-        ),
-        ifProd(
-          new webpack.optimize.UglifyJsPlugin({
-            // Compresses in production any bundle
-            sourceMap: true,
-            uglifyOptions: {
-              mangle: false
-            }
-          })
-        ),
-        new webpack.optimize.CommonsChunkPlugin({
-          // Combines any node module libraries used into their own file
-          name: 'js/pl-vendor-libraries',
-          chunks: ['js/pl-source'],
-          minChunks: module => {
-            return module.context && /node_modules/.test(module.context);
-          }
-        }),
+        new ExtractTextPlugin('[name]'),
+        ifDevelopment(new webpack.HotModuleReplacementPlugin(), new webpack.NamedModulesPlugin()),
+        // Remove with PL Core 3.x
         new CopyWebpackPlugin([
           {
             // Copy all images from source to public
-            context: resolve(plConfig.paths.source.images),
+            context: path.resolve(plConfig.paths.source.images),
             from: './**/*.*',
-            to: resolve(plConfig.paths.public.images)
+            to: path.resolve(plConfig.paths.public.images)
           },
           {
             // Copy favicon from source to public
-            context: resolve(plConfig.paths.source.root),
+            context: path.resolve(plConfig.paths.source.root),
             from: './*.ico',
-            to: resolve(plConfig.paths.public.root)
+            to: path.resolve(plConfig.paths.public.root)
           },
-          {
-            // Copy all web fonts from source to public
-            context: resolve(plConfig.paths.source.fonts),
-            from: './*',
-            to: resolve(plConfig.paths.public.fonts)
-          },
-          {
-            // Copy all css from source to public
-            context: resolve(plConfig.paths.source.css),
-            from: './*.css',
-            to: resolve(plConfig.paths.public.css)
-          },
+          // {
+          //     // Copy all web fonts from source to public
+          //     context: path.resolve(plConfig.paths.source.fonts),
+          //     from: "./*",
+          //     to: path.resolve(plConfig.paths.public.fonts)
+          // },
           {
             // Styleguide Copy everything but css
-            context: resolve(plConfig.paths.source.styleguide),
+            context: path.resolve(plConfig.paths.source.styleguide),
             from: './**/*',
-            to: resolve(plConfig.paths.public.root),
+            to: path.resolve(plConfig.paths.public.root),
             ignore: ['*.css']
           },
           {
             // Styleguide Copy and flatten css
-            context: resolve(plConfig.paths.source.styleguide),
+            context: path.resolve(plConfig.paths.source.styleguide),
             from: './**/*.css',
-            to: resolve(plConfig.paths.public.styleguide, 'css'),
+            to: path.resolve(plConfig.paths.public.styleguide, 'css'),
             flatten: true
           }
         ]),
-        new EventHooksPlugin({
-          // Before WebPack compiles, call the pattern build API, once done, bundle continues
-          'before-compile': function(compilationParams, callback) {
-            patternlab.build(callback, plConfig.cleanPublic);
-          }
-        }),
-        new EventHooksPlugin({
-          'after-compile': function(compilation, callback) {
-            // watch supported templates
-            const supportedTemplateExtensions = patternEngines.getSupportedFileExtensions();
-            const templateFilePaths = supportedTemplateExtensions.map(function(dotExtension) {
-              return plConfig.paths.source.patterns + '/**/*' + dotExtension;
-            });
-
-            // additional watch files
-            const watchFiles = [
-              plConfig.paths.source.patterns + '/**/*.json',
-              plConfig.paths.source.patterns + '**/*.md',
-              plConfig.paths.source.data + '**/*.json',
-              plConfig.paths.source.fonts + '**/*',
-              plConfig.paths.source.images + '**/*',
-              plConfig.paths.source.js + '**/*',
-              plConfig.paths.source.meta + '**/*',
-              plConfig.paths.source.annotations + '**/*'
-            ];
-
-            const allWatchFiles = watchFiles.concat(templateFilePaths);
-
-            allWatchFiles.forEach(function(globPath) {
-              const patternFiles = globby.sync(globPath).map(function(filePath) {
-                return resolve(filePath);
+        ifDevelopment(
+          new EventHooksPlugin({
+            afterEmit: function(compilation) {
+              const supportedTemplateExtensions = patternEngines.getSupportedFileExtensions();
+              const templateFilePaths = supportedTemplateExtensions.map(function(dotExtension) {
+                return `${plConfig.paths.source.patterns}**/*${dotExtension}`;
               });
 
-              compilation.fileDependencies = compilation.fileDependencies.concat(patternFiles);
+              // additional watch files
+              const watchFiles = [
+                `${plConfig.paths.source.patterns}**/*.(json|md|yaml|yml)`,
+                `${plConfig.paths.source.data}**/*.(json|md|yaml|yml)`,
+                `${plConfig.paths.source.fonts}**/*`,
+                `${plConfig.paths.source.images}**/*`,
+                `${plConfig.paths.source.meta}**/*`,
+                `${plConfig.paths.source.annotations}**/*`
+              ];
+
+              const allWatchFiles = watchFiles.concat(templateFilePaths);
+
+              allWatchFiles.forEach(function(globPath) {
+                const patternFiles = globby.sync(globPath).map(function(filePath) {
+                  return path.resolve(__dirname, filePath);
+                });
+                patternFiles.forEach(item => {
+                  compilation.fileDependencies.add(item);
+                });
+              });
+            }
+          })
+        ),
+        new EventHooksPlugin({
+          done: function(stats) {
+            let cleanPublic = plConfig.cleanPublic;
+            process.argv.forEach((val, index) => {
+              if (val.includes('cleanPublic')) {
+                val = val.split('=');
+                cleanPublic = JSON.parse(val[1]);
+              }
             });
 
-            // signal done and continue with build
-            callback();
+            patternlab.build(() => {}, cleanPublic);
           }
         })
       ]),
       devServer: {
-        contentBase: resolve(__dirname, 'public'),
-        port: plConfig.server.port,
+        contentBase: path.resolve(__dirname, plConfig.paths.public.root),
+        publicPath: `${plConfig.app.webpackDevServer.url}:${plConfig.app.webpackDevServer.port}`,
+        port: plConfig.app.webpackDevServer.port,
         open: true,
-        watchContentBase: false
+        hot: true,
+        watchContentBase: plConfig.app.webpackDevServer.watchContentBase,
+        watchOptions: plConfig.app.webpackDevServer.watchOptions
       },
       module: {
         rules: [
           {
             test: /\.js$/,
-            exclude: resolve('node_modules'),
+            exclude: /(node_modules|bower_components)/,
             use: [
               {
                 loader: 'babel-loader',
                 options: {
-                  presets: [['env', {modules: false}]]
+                  cacheDirectory: true
                 }
               }
             ]
+          },
+          {
+            test: /\.css$/,
+            use: ExtractTextPlugin.extract({
+              fallback: 'style-loader',
+              publicPath: '../',
+              use: [
+                {
+                  loader: 'css-loader'
+                }
+              ]
+            })
+          },
+          {
+            test: /\.(png|woff|woff2|eot|ttf|svg)$/,
+            use: [
+              {
+                loader: 'file-loader',
+                options: {
+                  name: '[path][name].[ext]'
+                }
+              }
+            ]
+          },
+          {
+            test: /\.tsx?$/,
+            loader: 'ts-loader',
+            options: {
+              configFile: 'tsconfig.json'
+            }
           }
         ]
       }
@@ -163,3 +208,34 @@ module.exports = env => {
 
   return config;
 };
+
+/**
+ * Creates a Webpack `entry` property e.g. `dest/filename`: `path/filename`
+ * @param {string} src Input path
+ * @param {string} files Input file name or glob
+ * @param {string} dest Output path
+ */
+function toWebpackEntry({from, files, to}) {
+  const entries = {};
+  const globs = files.map(file => {
+    const nonNegatedPath = `${from}/${file.replace('!', '')}`;
+    return file[0] === '!' ? `!${path.resolve(__dirname, nonNegatedPath)}` : path.resolve(__dirname, nonNegatedPath);
+  });
+
+  globby.sync(globs).forEach(function(filePath) {
+    let outputPath = filePath.replace(`${path.resolve(__dirname, from)}/`, `${to}`);
+    const extName = path.extname(filePath);
+
+    if (extName === '.ts') {
+      // Because we have everything including extensions in our entries,
+      // we have to replace the file ending for typescript files to the JavaScript
+      // extension manually when using TypeScript.
+      // Only has an effect when TypeScript files with ts-loader are used.
+      outputPath = outputPath.replace(path.basename(filePath), `${path.basename(filePath, '.ts')}.js`);
+    }
+
+    entries[`${path.relative(plConfig.paths.public.root, outputPath)}`] = filePath;
+  });
+
+  return entries;
+}

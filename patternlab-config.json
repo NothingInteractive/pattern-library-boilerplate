@@ -1,18 +1,40 @@
 {
+  "app": {
+    "webpackDevServer": {
+      "url": "http://localhost",
+      "port": 3000,
+      "watchContentBase": true,
+      "watchOptions": {
+        "aggregateTimeout": 500,
+        "ignored": [],
+        "info-verbosity": "verbose"
+      }
+    },
+    "webpackMerge": {
+      "entry": "replace"
+    },
+    "uglify": {
+      "sourceMap": false,
+      "parallel": true,
+      "uglifyOptions": {
+        "mangle": false
+      }
+    },
+    "namespace": ""
+  },
   "paths": {
     "source": {
       "root": "./source/",
-      "app": "./source/_app",
+      "app": "./source/_app/",
       "patterns": "./source/_patterns/",
       "data": "./source/_data/",
       "meta": "./source/_meta/",
       "annotations": "./source/_annotations/",
       "styleguide": "./node_modules/styleguidekit-assets-default/dist/",
-      "patternlabFiles": "./node_modules/styleguidekit-mustache-default/views/",
+      "css": "./source/css/",
       "js": "./source/js/",
-      "images": "./source/images/",
-      "fonts": "./source/fonts/",
-      "css": "./source/css/"
+      "patternlabFiles": "./node_modules/styleguidekit-mustache-default/views/",
+      "images": "./source/images/"
     },
     "public": {
       "root": "./public/",
@@ -20,10 +42,10 @@
       "data": "./public/styleguide/data/",
       "annotations": "./public/annotations/",
       "styleguide": "./public/styleguide/",
+      "css": "./public/css/",
       "js": "./public/js/",
       "images": "./public/images/",
-      "fonts": "./public/fonts/",
-      "css": "./public/css/"
+      "fonts": "./public/fonts/"
     },
     "package": {
       "root": "./dist",
@@ -33,20 +55,11 @@
       "css": "./dist/css/"
     }
   },
-  "server": {
-    "url": "http://localhost",
-    "port": 3000
-  },
-  "webpackMerge": {
-    "entry": "replace"
-  },
   "styleGuideExcludes": [],
   "defaultPattern": "all",
   "defaultShowPatternInfo": false,
   "cleanPublic": true,
   "patternExtension": "mustache",
-  "ignored-extensions": ["scss", "DS_Store", "less"],
-  "ignored-directories": ["scss"],
   "debug": false,
   "ishControlsHide": {
     "s": false,
